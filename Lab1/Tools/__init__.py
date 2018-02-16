@@ -1,1 +1,2 @@
-from Tools import *
+from .stats import *
+from .vis import *

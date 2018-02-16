@@ -1,0 +1,171 @@
+#from functools import partial
+#from multiprocessing.pool import Pool
+import math
+from collections import Counter
+from .vis import *
+
+
+def kernel_gaussian(val):
+
+    return 1 / math.sqrt(2 * math.pi) * math.exp(-val ** 2 / 2)
+
+
+def kernel_epanechnikov(val):
+
+    if abs(val) <= 1:
+        return 3/4*(1-val**2)
+    else:
+        return 0
+
+
+def kernel_tri_cube(val):
+
+    if abs(val) <= 1:
+        return (1-abs(val)**3)**3
+    else:
+        return 0
+
+class Distribution:
+
+    def __init__(self, sample):
+
+        self.values = sample
+        self.values.sort()
+        self.commonest = {}
+        self.median = None
+        self.variance = None
+        self.mean = sum(self.values)/len(self.values)
+        self.min = min(self.values)
+        self.max = max(self.values)
+        self.count_stats()
+
+
+    def count_commonest(self):
+
+        freq_list = []
+        m = Counter(self.values)
+        frequency = m.most_common(1)[0][1]
+        for a, b in m.items():
+            if b == frequency:
+                freq_list += [a]
+        self.commonest[frequency] = freq_list
+
+
+    def count_median(self):
+
+        length = len(self.values)
+        if length%2 == 0:
+            self.median = self.values[length//2] + self.values[length//2-1]
+        else:
+            self.median = self.values[length//2]
+
+        return
+
+
+    def count_variance(self):
+
+        self.variance = sum([(val-self.mean)**2 for val in self.values])\
+                        /(len(self.values)-1)
+        return
+
+
+    def count_quartiles(self):
+
+        list_of_quartiles = []
+        return
+
+
+    def count_quintile(self,pp):
+
+        i = math.floor(len(self.values)*pp+1)
+        return self.values[i]
+
+
+    def count_stats(self):
+
+        self.count_commonest()
+        self.count_median()
+        self.count_variance()
+        self.standard_deviation = math.sqrt(self.variance)
+
+        # self.skewness =
+        # self.kurtosis =
+        # self.quartiles =
+
+        self.print_stats()
+
+
+    def print_cont_distrib_list(self):
+
+        list = [
+            'Normal distribution[a,sigma]',
+            'Uniform distribution[{min,max}]',
+            'Log-normal distribution[a,sigma]',
+            'Triangular distribution[{a,c},b]',
+            'Cauchy distribution[a,b]',
+            'Exponential distribution[lambda]',
+            'Laplace distribution[a,b]',
+            'Pareto distribution[a,b]',
+            'Weibull distribution[a,b,c]',
+            'Beta distribution[a,b]',
+            'Student distribution[v]',
+            'Chi-square distribution[v]'
+        ]
+        for i in list:
+            print(i)
+
+        return True
+
+
+    def print_stats(self):
+
+        print('The commonest:',list(self.commonest.values())[0],'with frequency', list(self.commonest.keys())[0])
+        print('Max:',self.max)
+        print('Min:',self.min)
+        print('Mean:',self.mean)
+        print('Median:',self.median)
+        print('Variance:', self.variance)
+        print('Standard deviation:', self.standard_deviation)
+
+
+    def kernel_density(self,h):
+
+        y_list1 = []
+        y_list2 = []
+        y_list3 = []
+        h2 = 2.5
+        for x in self.values:
+            r = 1/(len(self.values)*h)
+            sm1 = 0
+            sm2 = 0
+            sm3 = 0
+            for j in self.values:
+                val = (x - j)
+                sm1 += kernel_gaussian(val / h)
+                sm2 += kernel_epanechnikov(val / h2)
+                sm3 += kernel_tri_cube(val / h)
+            y_list1 += [r + sm1]
+            y_list2 += [r + sm2]
+            y_list3 += [r + sm3]
+        self.show_kernel_density(y_list1, 'Gaussian_kernel.html')
+        self.show_kernel_density(y_list2, 'Epanechnikov_kernel.html')
+        self.show_kernel_density(y_list3, 'Tri-Cube_kernel.html')
+
+        return
+
+
+    def method_of_moments(self, distrib):
+
+        return True
+
+
+    def show_histogram(self, name = 'distrib_hist'):
+
+        plot_histogram(self.values,name)
+        return
+
+    def show_kernel_density(self, y_list, name):
+
+        plot_kernel_density(self.values, y_list, name)
+        return
+

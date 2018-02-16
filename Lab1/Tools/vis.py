@@ -27,18 +27,16 @@ def plot_kernel_density(sample, y, name):
     data = [trace]
     plot(data, filename=path_to_figure+name)
 
-# define list of x for y
+
 def plot_on_one_graph(sample,xx, y, name, kernels):
 
-    print(xx)
-    print(y)
     x = np.array(sample)
     trace_list = []
     for t in range(len(y)):
-        x = np.array(xx[t])
+        xr = np.array(xx[t])
         z = np.array(y[t])
         trace_list += [go.Scatter(
-            x=x,
+            x=xr,
             y=z,
             name=kernels[t]
         )]

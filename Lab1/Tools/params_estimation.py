@@ -101,3 +101,6 @@ class Estimator:
         plot_on_one_graph(self.values, list_of_samples, y_list, 'Samples_divided.html', names)
 
 
+
+
+

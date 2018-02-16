@@ -1,9 +1,6 @@
-#from functools import partial
-#from multiprocessing.pool import Pool
 import math
 from collections import Counter
 from .vis import *
-
 
 def kernel_gaussian(val):
 
@@ -25,6 +22,8 @@ def kernel_tri_cube(val):
     else:
         return 0
 
+
+
 class Distribution:
 
     def __init__(self, sample):
@@ -37,6 +36,7 @@ class Distribution:
         self.mean = sum(self.values)/len(self.values)
         self.min = min(self.values)
         self.max = max(self.values)
+        self.quartiles = []
         self.count_stats()
 
 
@@ -69,11 +69,12 @@ class Distribution:
         return
 
 
-    def count_quartiles(self):
+    def count_quartile(self):
 
         list_of_quartiles = []
-        return
-
+        for i in [0.25,0.5,0.75]:
+            list_of_quartiles += [self.count_quintile(i)]
+        self.quartiles = list_of_quartiles
 
     def count_quintile(self,pp):
 
@@ -87,12 +88,13 @@ class Distribution:
         self.count_median()
         self.count_variance()
         self.standard_deviation = math.sqrt(self.variance)
+        self.count_quartile()
 
         # self.skewness =
         # self.kurtosis =
         # self.quartiles =
 
-        self.print_stats()
+        #self.print_stats()
 
 
     def print_cont_distrib_list(self):
@@ -114,8 +116,6 @@ class Distribution:
         for i in list:
             print(i)
 
-        return True
-
 
     def print_stats(self):
 
@@ -126,6 +126,7 @@ class Distribution:
         print('Median:',self.median)
         print('Variance:', self.variance)
         print('Standard deviation:', self.standard_deviation)
+        print('Quartiles:', self.quartiles)
 
 
     def kernel_density(self,h):
@@ -133,7 +134,6 @@ class Distribution:
         y_list1 = []
         y_list2 = []
         y_list3 = []
-        h2 = 2.5
         for x in self.values:
             r = 1/(len(self.values)*h)
             sm1 = 0
@@ -142,30 +142,29 @@ class Distribution:
             for j in self.values:
                 val = (x - j)
                 sm1 += kernel_gaussian(val / h)
-                sm2 += kernel_epanechnikov(val / h2)
-                sm3 += kernel_tri_cube(val / h)
+                sm2 += kernel_epanechnikov(val / (h))
+                sm3 += kernel_tri_cube(val / (h))
             y_list1 += [r + sm1]
             y_list2 += [r + sm2]
             y_list3 += [r + sm3]
-        self.show_kernel_density(y_list1, 'Gaussian_kernel.html')
-        self.show_kernel_density(y_list2, 'Epanechnikov_kernel.html')
-        self.show_kernel_density(y_list3, 'Tri-Cube_kernel.html')
-
-        return
-
-
-    def method_of_moments(self, distrib):
-
-        return True
+        # self.show_kernel_density(y_list1, 'Gaussian_kernel.html')
+        # self.show_kernel_density(y_list2, 'Epanechnikov_kernel.html')
+        # self.show_kernel_density(y_list3, 'Tri-Cube_kernel.html')
+        y_list = [y_list1] + [y_list2] + [y_list3]
+        x_list = [self.values] + [self.values] + [self.values]
+        self.show_all(y_list, x_list, 'Combined.html',['Gaussian kernel','Epanechnikov kernel', 'Tri-Cube kernel'])
 
 
-    def show_histogram(self, name = 'distrib_hist'):
+    def show_histogram(self, name = 'distrib_hist.html'):
 
         plot_histogram(self.values,name)
-        return
+
 
     def show_kernel_density(self, y_list, name):
 
         plot_kernel_density(self.values, y_list, name)
-        return
 
+
+    def show_all(self, x_list, y_list, name,kernels):
+
+        plot_on_one_graph(self.values, x_list, y_list, name, kernels)

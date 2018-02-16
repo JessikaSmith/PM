@@ -9,5 +9,8 @@ data.dtype.names = ('year','mm','tmax_deg','tmin_deg','af_days','rain_mm','sun_h
 max_deg = list(data['tmax_deg'])
 max_deg = [float(x) for x in max_deg if x != 'N/A']
 m = Distribution(max_deg)
-m.show_histogram()
-m.kernel_density(1)
+#m.show_histogram()
+#m.kernel_density(1)
+
+est = Estimator(max_deg)
+est.estimate_params(3)

@@ -2,6 +2,7 @@
 
 """
 
+from plotly.plotly import image
 from plotly.offline import download_plotlyjs, plot
 import plotly.graph_objs as go
 import numpy as np
@@ -12,7 +13,8 @@ def plot_histogram(sample, name):
 
     x = np.array(sample)
     data = [go.Histogram(x=x)]
-    plot(data, filename=path_to_figure+name)
+    fig = go.Figure(data=data)
+    image.save_as(fig, filename=path_to_figure+name)
 
     return
 
@@ -25,7 +27,8 @@ def plot_kernel_density(sample, y, name):
         y=y
     )
     data = [trace]
-    plot(data, filename=path_to_figure+name)
+    fig = go.Figure(data=data)
+    image.save_as(fig, filename=path_to_figure+name)
 
 
 def plot_on_one_graph(sample,xx, y, name, kernels):
@@ -42,5 +45,16 @@ def plot_on_one_graph(sample,xx, y, name, kernels):
         )]
     data = [go.Histogram(x=x, name='sample')]
     data += trace_list
-    plot(data, filename=path_to_figure + name)
+    fig = go.Figure(data=data)
+    image.save_as(fig, filename=path_to_figure+name)
 
+def q_q_biplot(sample, theory):
+
+    #x = np.array(sample)
+
+   # trace = go.Scatter(
+    #    x=x,
+     #   y=y
+    #)
+
+    return True

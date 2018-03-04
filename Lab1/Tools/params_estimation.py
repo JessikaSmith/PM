@@ -2,12 +2,22 @@ from .vis import *
 from .stats import *
 import math
 import copy
+import random
 
 
-def normal_PDF(m, s, x):
-
+def normal_distrib(m, s, x):
     return 1/(math.sqrt(2*math.pi)*s)*math.exp(-(x-m)**2/(2*s**2))
 
+
+def log_normal_distrib(m, s, x):
+    1/(x*s*math.sqrt(2*math.pi))*math.exp(-(math.log(x)-m)**2/(2*s**2))
+    return True
+
+
+def weibull_distrib():
+    return True
+
+#def
 
 class Estimator:
 
@@ -16,12 +26,18 @@ class Estimator:
         self.values = sample
 
     # normal distrib
-    def estimate_params(self, num_of_distrib):
+    def divide_subset(self, num_of_distrib):
 
         h = len(self.values)//num_of_distrib
         list_of_samples = []
-        for i in range(0,len(self.values),h):
-            list_of_samples += [self.values[i:i+h]]
+        sample = self.values
+        for i in range(num_of_distrib-1):
+            subs = random.sample(sample, h)
+            list_of_samples += [subs]
+            sample = [i for i in sample if i not in subs]
+        list_of_samples += [sample]
+        #for i in range(0,len(self.values),h):
+         #   list_of_samples += [self.values[i:i+h]]
 
         if len(list_of_samples) > num_of_distrib:
             m = list_of_samples[-1]
@@ -58,7 +74,7 @@ class Estimator:
                     find_max = -1000
                     ind = 0
                     for t in range(k):
-                        elem = normal_PDF(mean[t],standard_dev[t],sam)
+                        elem = normal_distrib(mean[t],standard_dev[t],sam)
                         if elem > find_max:
                             ind = t
                             find_max = elem
@@ -98,7 +114,10 @@ class Estimator:
             names += ['Gaussian'+str(i)]
 
 
-        plot_on_one_graph(self.values, list_of_samples, y_list, 'Samples_divided.html', names)
+        def params_validation():
+            return True
+
+        plot_on_one_graph(self.values, list_of_samples, y_list, 'Samples_divided.png', names)
 
 
 

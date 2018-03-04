@@ -147,15 +147,15 @@ class Distribution:
             y_list1 += [r + sm1]
             y_list2 += [r + sm2]
             y_list3 += [r + sm3]
-        # self.show_kernel_density(y_list1, 'Gaussian_kernel.html')
-        # self.show_kernel_density(y_list2, 'Epanechnikov_kernel.html')
-        # self.show_kernel_density(y_list3, 'Tri-Cube_kernel.html')
+        self.show_kernel_density(y_list1, 'Gaussian_kernel.png')
+        self.show_kernel_density(y_list2, 'Epanechnikov_kernel.png')
+        self.show_kernel_density(y_list3, 'Tri-Cube_kernel.png')
         y_list = [y_list1] + [y_list2] + [y_list3]
         x_list = [self.values] + [self.values] + [self.values]
-        self.show_all(y_list, x_list, 'Combined.html',['Gaussian kernel','Epanechnikov kernel', 'Tri-Cube kernel'])
+        self.show_all(x_list, y_list, 'Combined.png',['Gaussian kernel','Epanechnikov kernel', 'Tri-Cube kernel'])
 
 
-    def show_histogram(self, name = 'distrib_hist.html'):
+    def show_histogram(self, name = 'distrib_hist.png'):
 
         plot_histogram(self.values,name)
 

@@ -16,4 +16,4 @@ m.show_histogram()
 m.kernel_density(1)
 
 est = Estimator(max_deg)
-est.divide_subset(2)
+est.divide_subset(3)

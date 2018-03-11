@@ -17,7 +17,7 @@ def log_normal_distrib(m, s, x):
 def weibull_distrib():
     return True
 
-#def
+#def triangular_distrib():
 
 class Estimator:
 
@@ -36,65 +36,22 @@ class Estimator:
             list_of_samples += [subs]
             sample = [i for i in sample if i not in subs]
         list_of_samples += [sample]
-        #for i in range(0,len(self.values),h):
-         #   list_of_samples += [self.values[i:i+h]]
 
         if len(list_of_samples) > num_of_distrib:
             m = list_of_samples[-1]
             del list_of_samples[-1]
             list_of_samples[-1] += m
 
-        new_list_of_samples = []
-        flag = True
+        #res_list_of_samples = self.method_of_moments(list_of_samples,'normal')
+        #print(res_list_of_samples)
+        #h = 1
+        #self.show_result(res_list_of_samples,h)
 
-        while flag:
-            mean = []
-            standard_dev = []
-            ind = -1
-            for i in range(len(list_of_samples)):
-                if list_of_samples[i] == []:
-                    ind = i
-
-            if ind != -1:
-                del list_of_samples[ind]
-
-            for sample in list_of_samples:
-                m = Distribution(sample)
-                mean += [m.mean]
-                standard_dev += [m.standard_deviation]
-
-            new_list_of_samples = []
-
-            for y in range(num_of_distrib):
-                new_list_of_samples += [[]]
-            k = len(mean)
-            for i in range(k):
-                list_samp = list_of_samples[i]
-                for sam in list_samp:
-                    find_max = -1000
-                    ind = 0
-                    for t in range(k):
-                        elem = normal_distrib(mean[t],standard_dev[t],sam)
-                        if elem > find_max:
-                            ind = t
-                            find_max = elem
-                    new_list_of_samples[ind] += [sam]
-
-            for i in range(num_of_distrib):
-                list_of_samples[i].sort()
-                new_list_of_samples[i].sort()
-                if list_of_samples[i] == new_list_of_samples[i]:
-                    flag = False
-                else:
-                    flag = True
-            list_of_samples = copy.deepcopy(new_list_of_samples)
-        print(list_of_samples)
-        h = 1
-        self.show_result(list_of_samples,h)
-
+        res_list_of_samples = self.method_of_moments(list_of_samples, 'lognormal')
+        print(res_list_of_samples)
 
     # bad implementation
-    def show_result(self,list_of_samples,h):
+    def show_result(self,list_of_samples, h):
 
         y_list = []
         for t in range(len(list_of_samples)):
@@ -114,8 +71,70 @@ class Estimator:
             names += ['Gaussian'+str(i)]
 
 
-        def params_validation():
-            return True
+    def method_of_moments(self,list_of_samples,type='normal'):
+
+        flag = True
+
+        while flag:
+            mean = []
+            standard_dev = []
+            ind = []
+            for i in range(len(list_of_samples)):
+                if not list_of_samples[i]:
+                    ind += [i]
+
+            if ind != []:
+                for i in ind.reverse():
+                    del list_of_samples[ind]
+
+            for sample in list_of_samples:
+
+                m = Distribution(sample)
+
+                if type == 'normal':
+                    mean += [m.mean]
+                    standard_dev += [m.standard_deviation]
+                if type == 'lognormal':
+                    mean += [m.lognormal_mean]
+                    standard_dev += [math.sqrt(m.lognormal_variance)]
+
+            new_list_of_samples = []
+
+            for y in range(len(list_of_samples)):
+                new_list_of_samples += [[]]
+            k = len(mean)
+
+            for i in range(k):
+                list_samp = list_of_samples[i]
+                for sam in list_samp:
+                    find_max = -1000
+                    ind = 0
+                    for t in range(k):
+
+                        if type == 'normal':
+                            elem = normal_distrib(mean[t], standard_dev[t], sam)
+                        if type == 'lognormal':
+                            elem = log_normal_distrib(mean[t], standard_dev[t], sam)
+
+                        if elem > find_max:
+                            ind = t
+                            find_max = elem
+                    new_list_of_samples[ind] += [sam]
+
+            for i in range(len(list_of_samples)):
+                list_of_samples[i].sort()
+                new_list_of_samples[i].sort()
+                if list_of_samples[i] == new_list_of_samples[i]:
+                    flag = False
+                else:
+                    flag = True
+
+            list_of_samples = copy.deepcopy(new_list_of_samples)
+
+        return list_of_samples
+
+    def params_validation():
+        return True
 
         plot_on_one_graph(self.values, list_of_samples, y_list, 'Samples_divided.png', names)
 

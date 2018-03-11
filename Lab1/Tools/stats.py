@@ -33,7 +33,9 @@ class Distribution:
         self.commonest = {}
         self.median = None
         self.variance = None
+        self.lognormal_variance = None
         self.mean = sum(self.values)/len(self.values)
+        self.lognormal_mean = None
         self.min = min(self.values)
         self.max = max(self.values)
         self.quartiles = []
@@ -69,6 +71,17 @@ class Distribution:
         return
 
 
+    def count_lognormal_mean(self):
+
+        self.lognormal_mean = -(math.log(sum([val**2 for val in self.values])))/2\
+                                    + 2 * math.log(sum(self.values))-3/2*math.log(len(self.values))
+
+
+    def count_lognormal_variance(self):
+
+        self.lognormal_variance = math.log(sum([val**2 for val in self.values]))\
+                                    -2*math.log(sum(self.values))+math.log(len(self.values))
+
     def count_quartile(self):
 
         list_of_quartiles = []
@@ -86,7 +99,9 @@ class Distribution:
 
         self.count_commonest()
         self.count_median()
+        self.count_lognormal_mean()
         self.count_variance()
+        self.count_lognormal_variance()
         self.standard_deviation = math.sqrt(self.variance)
         self.count_quartile()
 
@@ -142,8 +157,8 @@ class Distribution:
             for j in self.values:
                 val = (x - j)
                 sm1 += kernel_gaussian(val / h)
-                sm2 += kernel_epanechnikov(val / (h))
-                sm3 += kernel_tri_cube(val / (h))
+                sm2 += kernel_epanechnikov(val / h)
+                sm3 += kernel_tri_cube(val / h)
             y_list1 += [r + sm1]
             y_list2 += [r + sm2]
             y_list3 += [r + sm3]

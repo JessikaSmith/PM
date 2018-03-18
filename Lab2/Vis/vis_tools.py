@@ -20,3 +20,19 @@ def plot_components(components, title):
     data = [trace]
     fig = go.Figure(data=data, layout=layout)
     image.save_as(fig, filename=path_to_figure + title + '.jpeg')
+
+
+def plot_n_selection(eigvalues, title):
+    num = 7
+    trace = go.Scatter(
+        x=np.array([i for i in range(1, num + 1)]),
+        y=np.array(eigvalues[:num]),
+    )
+    layout = dict(
+        title='Scree Plot',
+        xaxis=dict(title='Principal Component'),
+        yaxis=dict(title='Eigenvalue')
+    )
+    data = [trace]
+    fig = go.Figure(data=data, layout=layout)
+    image.save_as(fig, filename=path_to_figure + title + '.jpeg')

@@ -17,6 +17,7 @@ def read_csv_data(fname, sample_size):
 def main():
     data = read_csv_data('year_prediction.csv', 1000)
     red = DimRed(data)
+    red.select_n()
     red.pca_svd(2)
     red.spectral_emb(2)
 

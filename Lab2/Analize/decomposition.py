@@ -1,17 +1,30 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.manifold import SpectralEmbedding
+from Lab2.Vis import *
+from sklearn.preprocessing import StandardScaler
+
 
 class DimRed:
 
     def __init__(self, sample):
         self.sample = sample
 
-    def pca(self, n):
+    def preprocess(self):
+        return StandardScaler().fit_transform(self.sample.values)
+
+    def pca_svd(self, n):
         pca = PCA(n_components=n)
-        print(list(self.sample.values))
-        pca.fit(list(self.sample.values))
+        data = self.preprocess()
+        pca.fit(list(data))
         print(pca.explained_variance_ratio_)
-        pca_res = pca.fit_transform(list(self.sample.values))
+        print(pca.score(data))
+        pca_res = pca.fit_transform(list(data))
+        plot_components(pca_res, 'svd_components')
 
-
-    # def
+    def spectral_emb(self, n):
+        semb = SpectralEmbedding(n_components=n)
+        data = self.preprocess()
+        semb.fit(data)
+        semb_res = semb.fit_transform(data)
+        plot_components(semb_res, 'spectr_emb_components')

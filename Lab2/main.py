@@ -1,7 +1,8 @@
 import random
 import numpy as np
 import pandas as pd
-from Lab2.Analize import DimRed
+from Lab2.Analize import *
+
 
 def modify_to_cont(sample, seed=42):
     random.seed(seed)
@@ -17,9 +18,13 @@ def read_csv_data(fname, sample_size):
 def main():
     data = read_csv_data('year_prediction.csv', 1000)
     red = DimRed(data)
+
+    print('Optimal number of components is ', red.select_num_comp(10))
+
     red.select_n()
     red.pca_svd(2)
     red.spectral_emb(2)
+
 
 if __name__ == '__main__':
     main()

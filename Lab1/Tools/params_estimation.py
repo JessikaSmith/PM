@@ -6,18 +6,17 @@ import random
 
 
 def normal_distrib(m, s, x):
-    return 1/(math.sqrt(2*math.pi)*s)*math.exp(-(x-m)**2/(2*s**2))
+    return 1 / (math.sqrt(2 * math.pi) * s) * math.exp(-(x - m) ** 2 / (2 * s ** 2))
 
 
 def log_normal_distrib(m, s, x):
-    1/(x*s*math.sqrt(2*math.pi))*math.exp(-(math.log(x)-m)**2/(2*s**2))
+    1 / (x * s * math.sqrt(2 * math.pi)) * math.exp(-(math.log(x) - m) ** 2 / (2 * s ** 2))
     return True
 
 
 def weibull_distrib():
     return True
 
-#def triangular_distrib():
 
 class Estimator:
 
@@ -25,13 +24,23 @@ class Estimator:
 
         self.values = sample
 
+    def get_q_q_plot(self, sample, theory_params, name):
+
+        sample_quantiles = []
+        theory_quantiles = []
+        m = Distribution(sample)
+        for i in range(100):
+            sample_quantiles.append(m.count_quintile(i / 100))
+            theory_quantiles.append(get_quantiles(theory_params[0], theory_params[1], i / 100))
+        q_q_biplot(sample_quantiles, theory_quantiles, name + '.png')
+
     # normal distrib
     def divide_subset(self, num_of_distrib):
 
-        h = len(self.values)//num_of_distrib
+        h = len(self.values) // num_of_distrib
         list_of_samples = []
         sample = self.values
-        for i in range(num_of_distrib-1):
+        for i in range(num_of_distrib - 1):
             subs = random.sample(sample, h)
             list_of_samples += [subs]
             sample = [i for i in sample if i not in subs]
@@ -42,16 +51,19 @@ class Estimator:
             del list_of_samples[-1]
             list_of_samples[-1] += m
 
-        #res_list_of_samples = self.method_of_moments(list_of_samples,'normal')
-        #print(res_list_of_samples)
-        #h = 1
-        #self.show_result(res_list_of_samples,h)
+        res_list_of_samples, mean, std = self.method_of_moments(list_of_samples, 'normal')
+        for i in range(len(list_of_samples)):
+            self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + str(i))
 
-        res_list_of_samples = self.method_of_moments(list_of_samples, 'lognormal')
-        print(res_list_of_samples)
+        # print(res_list_of_samples)
+        # h = 1
+        # self.show_result(res_list_of_samples,h)
+
+        # res_list_of_samples = self.method_of_moments(list_of_samples, 'lognormal')
+        # print(res_list_of_samples)
 
     # bad implementation
-    def show_result(self,list_of_samples, h):
+    def show_result(self, list_of_samples, h):
 
         y_list = []
         for t in range(len(list_of_samples)):
@@ -59,7 +71,7 @@ class Estimator:
 
         for i in range(len(list_of_samples)):
             for x in list_of_samples[i]:
-                r = 1/(len(list_of_samples[i])*h)
+                r = 1 / (len(list_of_samples[i]) * h)
                 sm = 0
                 for j in list_of_samples[i]:
                     val = (x - j)
@@ -68,10 +80,9 @@ class Estimator:
 
         names = []
         for i in range(len(y_list)):
-            names += ['Gaussian'+str(i)]
+            names += ['Gaussian' + str(i)]
 
-
-    def method_of_moments(self,list_of_samples,type='normal'):
+    def method_of_moments(self, list_of_samples, type='normal'):
 
         flag = True
 
@@ -131,14 +142,9 @@ class Estimator:
 
             list_of_samples = copy.deepcopy(new_list_of_samples)
 
-        return list_of_samples
+        return list_of_samples, mean, standard_dev
 
-    def params_validation():
+    def params_validation(self):
         return True
 
-        plot_on_one_graph(self.values, list_of_samples, y_list, 'Samples_divided.png', names)
-
-
-
-
-
+        # plot_on_one_graph(self.values, list_of_samples, y_list, 'Samples_divided.png', names)

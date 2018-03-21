@@ -9,17 +9,15 @@ import numpy as np
 
 path_to_figure = 'Figures\\'
 
-def plot_histogram(sample, name):
 
+def plot_histogram(sample, name):
     x = np.array(sample)
     data = [go.Histogram(x=x)]
     fig = go.Figure(data=data)
-    image.save_as(fig, filename=path_to_figure+name)
+    image.save_as(fig, filename=path_to_figure + name)
 
-    return
 
 def plot_kernel_density(sample, y, name):
-
     x = np.array(sample)
     y = np.array(y)
     trace = go.Scatter(
@@ -28,11 +26,10 @@ def plot_kernel_density(sample, y, name):
     )
     data = [trace]
     fig = go.Figure(data=data)
-    image.save_as(fig, filename=path_to_figure+name)
+    image.save_as(fig, filename=path_to_figure + name)
 
 
-def plot_on_one_graph(sample,xx, y, name, kernels):
-
+def plot_on_one_graph(sample, xx, y, name, kernels):
     x = np.array(sample)
     trace_list = []
     for t in range(len(y)):
@@ -46,15 +43,19 @@ def plot_on_one_graph(sample,xx, y, name, kernels):
     data = [go.Histogram(x=x, name='sample')]
     data += trace_list
     fig = go.Figure(data=data)
-    image.save_as(fig, filename=path_to_figure+name)
+    image.save_as(fig, filename=path_to_figure + name)
 
-def q_q_biplot(sample, theory):
 
-    #x = np.array(sample)
+def q_q_biplot(sample, theory, name):
+    trace = go.Scatter(
+        x=np.array(theory),
+        y=np.array(sample),
+        mode='markers'
+    )
+    layout = dict(
+        xaxis=dict(title='Theoretical'),
+        yaxis=dict(title='Sample')
+    )
+    fig = go.Figure(data=[trace], layout=layout)
 
-   # trace = go.Scatter(
-    #    x=x,
-     #   y=y
-    #)
-
-    return True
+    image.save_as(fig, filename=path_to_figure + name)

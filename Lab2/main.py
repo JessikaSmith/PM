@@ -21,10 +21,10 @@ def main():
 
     print('Optimal number of components is ', red.select_num_comp(10))
 
-    red.select_n()
-    red.pca_svd(2)
-    red.spectral_emb(2)
-
+    optimal = red.select_num_comp(10)
+    red.pca_svd(optimal)
+    red.spectral_emb(optimal)
+    red.fa(optimal)
 
 if __name__ == '__main__':
     main()

@@ -56,10 +56,10 @@ class DimRed:
         pca = PCA(n_components=n)
         data = self.preprocess()
         pca.fit(list(data))
-        print(pca.explained_variance_)
+        # factor loadings
         print(calculate_loadings(pca))
         # principal components scores
-        pca.components_
+        print(pca.components_)
         pca_res = pca.fit_transform(list(data))
         # plot_components(pca_res, 'svd_components')
 
@@ -71,4 +71,7 @@ class DimRed:
         # plot_components(semb_res, 'spectr_emb_components')
 
     def fa(self, n):
-        fa = SpectralEmbedding(n_components=n)
+        fa = FactorAnalysis(n_components=n)
+        data = self.preprocess()
+        fa.fit(data)
+        print(fa.components_)

@@ -30,10 +30,11 @@ def plot_kernel_density(sample, y, name):
 
 
 def plot_on_one_graph(sample, xx, y, name, kernels):
+    print(y)
     x = np.array(sample)
     trace_list = []
     for t in range(len(y)):
-        xr = np.array(xx[t])
+        xr = np.array(xx)
         z = np.array(y[t])
         trace_list += [go.Scatter(
             x=xr,
@@ -59,3 +60,4 @@ def q_q_biplot(sample, theory, name):
     fig = go.Figure(data=[trace], layout=layout)
 
     image.save_as(fig, filename=path_to_figure + name)
+

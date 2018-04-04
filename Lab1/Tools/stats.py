@@ -3,6 +3,7 @@ from collections import Counter
 from .vis import *
 import scipy.stats
 
+
 def get_quantiles(m, s, p):
     return scipy.stats.norm(m, s).ppf(p)
 
@@ -42,6 +43,9 @@ class Distribution:
         self.quartiles = []
         self.count_stats()
 
+    def iqr(self):
+        return scipy.stats.iqr(self.values)
+
     def count_commonest(self):
 
         freq_list = []
@@ -68,16 +72,6 @@ class Distribution:
                         / (len(self.values) - 1)
         return
 
-    def count_lognormal_mean(self):
-
-        self.lognormal_mean = -(math.log(sum([val ** 2 for val in self.values]))) / 2 \
-                              + 2 * math.log(sum(self.values)) - 3 / 2 * math.log(len(self.values))
-
-    def count_lognormal_variance(self):
-
-        self.lognormal_variance = math.log(sum([val ** 2 for val in self.values])) \
-                                  - 2 * math.log(sum(self.values)) + math.log(len(self.values))
-
     def count_quartile(self):
 
         list_of_quartiles = []
@@ -96,9 +90,7 @@ class Distribution:
 
         self.count_commonest()
         self.count_median()
-        self.count_lognormal_mean()
         self.count_variance()
-        self.count_lognormal_variance()
         self.standard_deviation = math.sqrt(self.variance)
         self.count_quartile()
 
@@ -151,8 +143,8 @@ class Distribution:
             for j in self.values:
                 val = (x - j)
                 sm1 += kernel_gaussian(val / h)
-                sm2 += kernel_epanechnikov(val / h)
-                sm3 += kernel_tri_cube(val / h)
+                sm2 += kernel_epanechnikov(val / 0.8)
+                sm3 += kernel_tri_cube(val / 0.9)
             y_list1 += [r + sm1]
             y_list2 += [r + sm2]
             y_list3 += [r + sm3]
@@ -160,7 +152,7 @@ class Distribution:
         self.show_kernel_density(y_list2, 'Epanechnikov_kernel.png')
         self.show_kernel_density(y_list3, 'Tri-Cube_kernel.png')
         y_list = [y_list1] + [y_list2] + [y_list3]
-        x_list = [self.values] + [self.values] + [self.values]
+        x_list = [self.values + self.values + self.values]
         self.show_all(x_list, y_list, 'Combined.png', ['Gaussian kernel', 'Epanechnikov kernel', 'Tri-Cube kernel'])
 
     def show_histogram(self, name='distrib_hist.png'):

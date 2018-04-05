@@ -1,7 +1,10 @@
+
+
 class Simulator:
 
-    def __init__(self, params):
-        pass
+    def __init__(self, m, s):
+        self.mean = m
+        self.std = s
 
     def piecewize_discretisation(self):
         pass

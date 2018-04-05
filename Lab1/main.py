@@ -15,11 +15,10 @@ def main():
     max_deg = [float(x) for x in max_deg if x != 'N/A']
     random.seed(42)
     max_deg = [x + 0.01 * random.random() for x in max_deg]
-    print(max_deg)
     m = Distribution(max_deg)
     # m.show_histogram()
 
-    m.kernel_density(1)
+    # m.kernel_density(1)
 
     est = Estimator(max_deg)
     est.divide_subset(3)

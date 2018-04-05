@@ -5,7 +5,7 @@ import scipy.stats
 
 
 def get_quantiles(m, s, p):
-    return scipy.stats.norm(m, s).ppf(p)
+    return scipy.stats.norm.ppf(p,m,s)
 
 
 def kernel_gaussian(val):
@@ -94,11 +94,6 @@ class Distribution:
         self.standard_deviation = math.sqrt(self.variance)
         self.count_quartile()
 
-        # self.skewness =
-        # self.kurtosis =
-        # self.quartiles =
-
-        # self.print_stats()
 
     def print_cont_distrib_list(self):
 

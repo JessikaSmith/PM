@@ -1,4 +1,3 @@
-from .vis import *
 from .stats import *
 import math
 import copy
@@ -38,7 +37,7 @@ class Estimator:
         m = Distribution(sample)
         for i in range(100):
             sample_quantiles.append(m.count_quintile(i / 100))
-            theory_quantiles.append(get_quantiles(theory_params[0], theory_params[1], i / 100))
+        theory_quantiles = get_quantiles([i/100 for i in range(100)],theory_params[0], theory_params[1])
         q_q_biplot(sample_quantiles, theory_quantiles, name + '.png')
 
     # normal&lognormal distrib
@@ -56,7 +55,7 @@ class Estimator:
             del list_of_samples[-1]
             list_of_samples[-1] += m
         res_list_of_samples, mean, std = self.method_of_moments(list_of_samples, 'normal')
-        self.show_result([i for i in range(26)], mean, std)
+        self.show_result([i/5 for i in range(130)], mean, std)
         for i in range(len(list_of_samples)):
             self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + str(i))
 
@@ -66,7 +65,6 @@ class Estimator:
             tmp_arr = []
             if type == 'normal':
                 for x in int:
-                    print(x, mean[i],sd[i], normal_distrib(mean[i], sd[i], x))
                     tmp_arr += [normal_distrib(mean[i], sd[i], x)]
                 arr += [tmp_arr]
             else:
@@ -78,8 +76,9 @@ class Estimator:
             names += ['Gaussian' + str(i)]
         plot_on_one_graph(self.values, int, arr, 'Samples_divided.png', names)
 
-    def mlm(self):
-        pass
+    def mlm(self, sample):
+        m = Distribution(sample)
+
 
     def method_of_quintiles(self, sample, type='lognormal'):
         m = Distribution(sample)
@@ -106,7 +105,6 @@ class Estimator:
                 if not list_of_samples[i]:
                     ind += [i]
             if ind != []:
-                print(ind)
                 for i in ind.reverse():
                     del list_of_samples[ind]
             for sample in list_of_samples:
@@ -138,9 +136,10 @@ class Estimator:
                 else:
                     flag = True
             list_of_samples = copy.deepcopy(new_list_of_samples)
+        print("Estimated parameters with method of moments")
+        for i in range(len(mean)):
+            print("Sample",i,"mean:",mean[i],"sd:",standard_dev[i])
         return list_of_samples, mean, standard_dev
 
     def params_validation(self):
         return True
-
-print

@@ -1,3 +1,4 @@
+import scipy.stats
 
 
 class Simulator:

@@ -16,8 +16,11 @@ path_to_figure = 'Figures\\'
 
 def plot_histogram(sample, name):
     x = np.array(sample)
-    data = [go.Histogram(x=x)]
-    fig = go.Figure(data=data)
+    data = [go.Histogram(x=x, histnorm='probability')]
+    layout = dict(
+        xaxis=dict(title="values")
+    )
+    fig = go.Figure(data=data, layout=layout)
     image.save_as(fig, filename=path_to_figure + name)
 
 
@@ -33,8 +36,23 @@ def plot_kernel_density(sample, y, name):
     image.save_as(fig, filename=path_to_figure + name)
 
 
+def sample_plot(sample, x, y, name, nbinsx=20):
+    sample = np.array(sample)
+    trace = [go.Scatter(
+        x=np.array(x),
+        y=np.array(y),
+    )]
+    layout = dict(
+        xaxis=dict(title="values")
+    )
+    data = [go.Histogram(x=sample, histnorm='probability',nbinsx=nbinsx)]
+    data += trace
+    fig = go.Figure(data=data, layout=layout)
+    image.save_as(fig, filename=path_to_figure + name)
+
+
 def plot_on_one_graph(sample, xx, y, name, kernels):
-    x = np.array(sample)
+    # x = np.array(sample)
     trace_list = []
     for t in range(len(y)):
         xr = np.array(xx)
@@ -44,6 +62,7 @@ def plot_on_one_graph(sample, xx, y, name, kernels):
             y=z,
             name=kernels[t]
         )]
+    # data = [go.Histogram(x=x, histnorm='probability')]
     data = trace_list
     fig = go.Figure(data=data)
     plot(fig)
@@ -74,5 +93,5 @@ def _test_print_norm(m, s, int):
     fig, ax = plt.subplots(1, 1)
     int = np.linspace(0, 26, 26)
     print(norm.pdf(int, loc=m, scale=s))
-    #ax.plot(int, norm.pdf(int, loc=m, scale=s), 'r-', lw=5, alpha=0.6, label='norm pdf')
-    #fig.show()
+    # ax.plot(int, norm.pdf(int, loc=m, scale=s), 'r-', lw=5, alpha=0.6, label='norm pdf')
+    # fig.show()

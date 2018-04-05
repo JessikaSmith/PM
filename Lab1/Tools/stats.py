@@ -70,7 +70,11 @@ class Distribution:
 
         self.variance = sum([(val - self.mean) ** 2 for val in self.values]) \
                         / (len(self.values) - 1)
-        return
+
+    def count_biased_variance(self):
+
+        self.biased_variance = sum([(val - self.mean) ** 2 for val in self.values]) \
+                        / (len(self.values))
 
     def count_quartile(self):
 
@@ -124,6 +128,7 @@ class Distribution:
         print('Variance:', self.variance)
         print('Standard deviation:', self.standard_deviation)
         print('Quartiles:', self.quartiles)
+
 
     def kernel_density(self, h):
 

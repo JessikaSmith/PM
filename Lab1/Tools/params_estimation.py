@@ -37,7 +37,7 @@ class Estimator:
         m = Distribution(sample)
         for i in range(100):
             sample_quantiles.append(m.count_quintile(i / 100))
-        theory_quantiles = get_quantiles([i/100 for i in range(100)],theory_params[0], theory_params[1])
+        theory_quantiles = get_quantiles([i / 100 for i in range(100)], theory_params[0], theory_params[1])
         q_q_biplot(sample_quantiles, theory_quantiles, name + '.png')
 
     # normal&lognormal distrib
@@ -55,11 +55,11 @@ class Estimator:
             del list_of_samples[-1]
             list_of_samples[-1] += m
         res_list_of_samples, mean, std = self.method_of_moments(list_of_samples, 'normal')
-        self.show_result([i/5 for i in range(130)], mean, std)
+        self.show_result(res_list_of_samples, [i / 5 for i in range(130)], mean, std)
         for i in range(len(list_of_samples)):
             self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + str(i))
 
-    def show_result(self, int, mean, sd, type='normal'):
+    def show_result(self,res_list_of_samples, int, mean, sd, type='normal'):
         arr = []
         for i in range(len(mean)):
             tmp_arr = []
@@ -74,10 +74,15 @@ class Estimator:
         names = []
         for i in range(len(mean)):
             names += ['Gaussian' + str(i)]
+        nbins = [17, 4, 17]
+        for i in range(len(arr)):
+            sample_plot(res_list_of_samples[i], int, arr[i], "Samples"+str(i)+"_div.png",nbins[i])
         plot_on_one_graph(self.values, int, arr, 'Samples_divided.png', names)
 
     def mlm(self, sample):
         m = Distribution(sample)
+        mean = m.mean
+        sd = m.count_biased_variance()
 
 
     def method_of_quintiles(self, sample, type='lognormal'):
@@ -138,7 +143,7 @@ class Estimator:
             list_of_samples = copy.deepcopy(new_list_of_samples)
         print("Estimated parameters with method of moments")
         for i in range(len(mean)):
-            print("Sample",i,"mean:",mean[i],"sd:",standard_dev[i])
+            print("Sample", i, "mean:", mean[i], "sd:", standard_dev[i])
         return list_of_samples, mean, standard_dev
 
     def params_validation(self):

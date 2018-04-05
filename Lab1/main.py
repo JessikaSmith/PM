@@ -16,7 +16,7 @@ def main():
     random.seed(42)
     max_deg = [x + 0.01 * random.random() for x in max_deg]
     m = Distribution(max_deg)
-    # m.show_histogram()
+    m.show_histogram()
 
     # m.kernel_density(1)
 

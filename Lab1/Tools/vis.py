@@ -48,7 +48,8 @@ def sample_plot(sample, x, y, name, nbinsx=20):
     data = [go.Histogram(x=sample, histnorm='probability',nbinsx=nbinsx)]
     data += trace
     fig = go.Figure(data=data, layout=layout)
-    image.save_as(fig, filename=path_to_figure + name)
+    plot(fig)
+    #image.save_as(fig, filename=path_to_figure + name)
 
 
 def plot_on_one_graph(sample, xx, y, name, kernels):
@@ -85,8 +86,8 @@ def q_q_biplot(sample, theory, name):
         yaxis=dict(title='Sample')
     )
     fig = go.Figure(data=[trace1, trace2], layout=layout)
-
-    image.save_as(fig, filename=path_to_figure + name)
+    plot(fig)
+    #image.save_as(fig, filename=path_to_figure + name)
 
 
 def _test_print_norm(m, s, int):

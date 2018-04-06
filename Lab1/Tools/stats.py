@@ -5,7 +5,7 @@ import scipy.stats
 
 
 def get_quantiles(m, s, p):
-    return scipy.stats.norm.ppf(p,m,s)
+    return scipy.stats.norm.ppf(p, m, s)
 
 
 def kernel_gaussian(val):
@@ -29,25 +29,23 @@ def kernel_tri_cube(val):
 class Distribution:
 
     def __init__(self, sample):
-
         self.values = sample
         self.values.sort()
         self.commonest = {}
         self.median = None
         self.variance = None
-        self.lognormal_variance = None
         self.mean = sum(self.values) / len(self.values)
-        self.lognormal_mean = None
+        self.biased_variance = None
         self.min = min(self.values)
         self.max = max(self.values)
-        self.quartiles = []
+        #self.quartiles = []
+        self.iqr = None
         self.count_stats()
 
-    def iqr(self):
-        return scipy.stats.iqr(self.values)
+    def count_iqr(self):
+        self.iqr = scipy.stats.iqr(self.values)
 
     def count_commonest(self):
-
         freq_list = []
         m = Counter(self.values)
         frequency = m.most_common(1)[0][1]
@@ -57,50 +55,40 @@ class Distribution:
         self.commonest[frequency] = freq_list
 
     def count_median(self):
-
         length = len(self.values)
         if length % 2 == 0:
             self.median = self.values[length // 2] + self.values[length // 2 - 1]
         else:
             self.median = self.values[length // 2]
 
-        return
-
     def count_variance(self):
-
         self.variance = sum([(val - self.mean) ** 2 for val in self.values]) \
                         / (len(self.values) - 1)
 
     def count_biased_variance(self):
-
         self.biased_variance = sum([(val - self.mean) ** 2 for val in self.values]) \
-                        / (len(self.values))
+                               / (len(self.values))
 
     def count_quartile(self):
-
         list_of_quartiles = []
         for i in [0.25, 0.5, 0.75]:
             list_of_quartiles += [self.count_quintile(i)]
         self.quartiles = list_of_quartiles
 
     def count_quintile(self, pp):
-
-        i = math.floor(len(self.values) * pp + 1)
-        # check
-        # j = np.percentile(self.values, pp*100)
+        i = math.floor(len(self.values) * pp)
         return self.values[i]
 
     def count_stats(self):
-
         self.count_commonest()
         self.count_median()
         self.count_variance()
         self.standard_deviation = math.sqrt(self.variance)
-        self.count_quartile()
-
+        #self.count_quartile()
+        self.count_biased_variance()
+        self.count_iqr()
 
     def print_cont_distrib_list(self):
-
         list = [
             'Normal distribution[a,sigma]',
             'Uniform distribution[{min,max}]',
@@ -119,7 +107,6 @@ class Distribution:
             print(i)
 
     def print_stats(self):
-
         print('The commonest:', list(self.commonest.values())[0], 'with frequency', list(self.commonest.keys())[0])
         print('Max:', self.max)
         print('Min:', self.min)
@@ -129,9 +116,7 @@ class Distribution:
         print('Standard deviation:', self.standard_deviation)
         print('Quartiles:', self.quartiles)
 
-
     def kernel_density(self, h):
-
         y_list1 = []
         y_list2 = []
         y_list3 = []
@@ -156,13 +141,10 @@ class Distribution:
         self.show_all(x_list, y_list, 'Combined.png', ['Gaussian kernel', 'Epanechnikov kernel', 'Tri-Cube kernel'])
 
     def show_histogram(self, name='distrib_hist.png'):
-
         plot_histogram(self.values, name)
 
     def show_kernel_density(self, y_list, name):
-
         plot_kernel_density(self.values, y_list, name)
 
     def show_all(self, x_list, y_list, name, kernels):
-
         plot_on_one_graph(self.values, x_list, y_list, name, kernels)

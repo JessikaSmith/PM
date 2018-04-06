@@ -18,14 +18,6 @@ def log_normal_distrib_check(m, s, x):
     return lognorm.pdf(x, m, s)
 
 
-def triangular_distrib():
-    pass
-
-
-def weibull_distrib():
-    return True
-
-
 class Estimator:
 
     def __init__(self, sample):
@@ -40,7 +32,6 @@ class Estimator:
         theory_quantiles = get_quantiles([i / 100 for i in range(100)], theory_params[0], theory_params[1])
         q_q_biplot(sample_quantiles, theory_quantiles, name + '.png')
 
-    # normal&lognormal distrib
     def divide_subset(self, num_of_distrib):
         h = len(self.values) // num_of_distrib
         list_of_samples = []
@@ -54,12 +45,14 @@ class Estimator:
             m = list_of_samples[-1]
             del list_of_samples[-1]
             list_of_samples[-1] += m
-        res_list_of_samples, mean, std = self.method_of_moments(list_of_samples, 'normal')
-        self.show_result(res_list_of_samples, [i / 5 for i in range(130)], mean, std)
-        for i in range(len(list_of_samples)):
-            self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + str(i))
+        list_of_names = ["quintiles"] #["moments", "mle", ["quintiles"]
+        for method in list_of_names:
+            res_list_of_samples, mean, std = self.method_of_estimation(list_of_samples, method, "normal")
+            self.show_result(res_list_of_samples, [i / 5 for i in range(130)], mean, std, method)
+            for i in range(len(list_of_samples)):
+                self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + method + str(i))
 
-    def show_result(self,res_list_of_samples, int, mean, sd, type='normal'):
+    def show_result(self, res_list_of_samples, int, mean, sd, method, type='normal'):
         arr = []
         for i in range(len(mean)):
             tmp_arr = []
@@ -75,25 +68,14 @@ class Estimator:
         for i in range(len(mean)):
             names += ['Gaussian' + str(i)]
         nbins = [17, 4, 17]
+        if method == 'quintiles':
+            nbins = [10,10,10]
         for i in range(len(arr)):
-            sample_plot(res_list_of_samples[i], int, arr[i], "Samples"+str(i)+"_div.png",nbins[i])
+            sample_plot(res_list_of_samples[i], int, arr[i], "Samples" + str(i) + "_div" + "_" + method + ".png",
+                        nbins[i])
         plot_on_one_graph(self.values, int, arr, 'Samples_divided.png', names)
 
-    def mlm(self, sample):
-        m = Distribution(sample)
-        mean = m.mean
-        sd = m.count_biased_variance()
-
-
-    def method_of_quintiles(self, sample, type='lognormal'):
-        m = Distribution(sample)
-        if type == 'lognormal':
-            # median of the sample
-            return math.log(median(sample)), math.log(m.count_quintile(0.25) / m.count_quintile(0.75)) / 1.35
-        if type == 'normal':
-            return
-
-    def method_of_moments(self, list_of_samples, type='normal'):
+    def method_of_estimation(self, list_of_samples, method='moments', type='normal'):
         """
 
         :param list_of_samples: list of lists
@@ -110,12 +92,24 @@ class Estimator:
                 if not list_of_samples[i]:
                     ind += [i]
             if ind != []:
-                for i in ind.reverse():
-                    del list_of_samples[ind]
+                print(ind,len(list_of_samples))
+                if len(ind)==1:
+                    del list_of_samples[ind[0]]
+                elif len(ind)==2:
+                    del list_of_samples[ind[-1]]
+                    del list_of_samples[ind[0]]
             for sample in list_of_samples:
                 m = Distribution(sample)
-                mean += [m.mean]
-                standard_dev += [m.standard_deviation]
+                if method == "moments":
+                    mean += [m.mean]
+                    standard_dev += [m.standard_deviation]
+                if method == "mle":
+                    mean += [m.mean]
+                    standard_dev += [m.biased_variance ** (1 / 2)]
+                    print(m.biased_variance)
+                if method == "quintiles":
+                    standard_dev += [m.iqr / 1.34]
+                    mean += [m.count_quintile(0.75)-(0.67*(m.iqr / 1.34))]
             new_list_of_samples = []
             for y in range(len(list_of_samples)):
                 new_list_of_samples += [[]]
@@ -126,10 +120,7 @@ class Estimator:
                     find_max = -float(math.inf)
                     ind = 0
                     for t in range(k):
-                        if type == 'normal':
-                            elem = normal_distrib(mean[t], standard_dev[t], sam)
-                        if type == 'lognormal':
-                            elem = log_normal_distrib(mean[t], standard_dev[t], sam)
+                        elem = normal_distrib(mean[t], standard_dev[t], sam)
                         if elem > find_max:
                             ind, find_max = t, elem
                     new_list_of_samples[ind] += [sam]
@@ -141,7 +132,7 @@ class Estimator:
                 else:
                     flag = True
             list_of_samples = copy.deepcopy(new_list_of_samples)
-        print("Estimated parameters with method of moments")
+        print("Estimated parameters with " + method)
         for i in range(len(mean)):
             print("Sample", i, "mean:", mean[i], "sd:", standard_dev[i])
         return list_of_samples, mean, standard_dev

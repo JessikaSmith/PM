@@ -6,6 +6,8 @@ from plotly.plotly import image
 from plotly.offline import download_plotlyjs, plot
 import plotly.graph_objs as go
 import numpy as np
+import statsmodels.api as sm
+import pylab
 
 # test
 from scipy.stats import norm
@@ -45,11 +47,11 @@ def sample_plot(sample, x, y, name, nbinsx=20):
     layout = dict(
         xaxis=dict(title="values")
     )
-    data = [go.Histogram(x=sample, histnorm='probability',nbinsx=nbinsx)]
+    data = [go.Histogram(x=sample, histnorm='probability', nbinsx=nbinsx)]
     data += trace
     fig = go.Figure(data=data, layout=layout)
     plot(fig)
-    #image.save_as(fig, filename=path_to_figure + name)
+    # image.save_as(fig, filename=path_to_figure + name)
 
 
 def plot_on_one_graph(sample, xx, y, name, kernels):
@@ -70,6 +72,11 @@ def plot_on_one_graph(sample, xx, y, name, kernels):
     # image.save_as(fig, filename=path_to_figure + name)
 
 
+def q_q_biplot_test(sample, theory_params,name):
+    sm.qqplot(np.array(sample),line='s', loc=theory_params[0], scale=theory_params[1])
+    pylab.savefig(path_to_figure + name, bbox_inches='tight')
+
+
 def q_q_biplot(sample, theory, name):
     trace1 = go.Scatter(
         x=np.array(theory),
@@ -87,7 +94,7 @@ def q_q_biplot(sample, theory, name):
     )
     fig = go.Figure(data=[trace1, trace2], layout=layout)
     plot(fig)
-    #image.save_as(fig, filename=path_to_figure + name)
+    # image.save_as(fig, filename=path_to_figure + name)
 
 
 def _test_print_norm(m, s, int):

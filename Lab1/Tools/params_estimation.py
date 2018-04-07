@@ -5,6 +5,7 @@ import random
 from statistics import median
 from scipy.stats import norm, lognorm, triang
 
+import time
 
 def normal_distrib(m, s, x):
     return 1 / (math.sqrt(2 * math.pi) * s) * math.exp(-(x - m) ** 2 / (2 * s ** 2))
@@ -25,12 +26,12 @@ class Estimator:
 
     def get_q_q_plot(self, sample, theory_params, name):
         sample_quantiles = []
-        theory_quantiles = []
         m = Distribution(sample)
         for i in range(100):
             sample_quantiles.append(m.count_quintile(i / 100))
         theory_quantiles = get_quantiles([i / 100 for i in range(100)], theory_params[0], theory_params[1])
-        q_q_biplot(sample_quantiles, theory_quantiles, name + '.png')
+        # q_q_biplot(sample_quantiles, theory_quantiles, name + '.png')
+        q_q_biplot_test(sample, theory_params, name + '.png')
 
     def divide_subset(self, num_of_distrib):
         h = len(self.values) // num_of_distrib
@@ -45,11 +46,12 @@ class Estimator:
             m = list_of_samples[-1]
             del list_of_samples[-1]
             list_of_samples[-1] += m
-        list_of_names = ["quintiles"] #["moments", "mle", ["quintiles"]
+        list_of_names = ["moments", "mle", "quintiles"]
         for method in list_of_names:
             res_list_of_samples, mean, std = self.method_of_estimation(list_of_samples, method, "normal")
             self.show_result(res_list_of_samples, [i / 5 for i in range(130)], mean, std, method)
             for i in range(len(list_of_samples)):
+                print(mean[i], std[i])
                 self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + method + str(i))
 
     def show_result(self, res_list_of_samples, int, mean, sd, method, type='normal'):
@@ -70,10 +72,10 @@ class Estimator:
         nbins = [17, 4, 17]
         if method == 'quintiles':
             nbins = [10,10,10]
-        for i in range(len(arr)):
-            sample_plot(res_list_of_samples[i], int, arr[i], "Samples" + str(i) + "_div" + "_" + method + ".png",
-                        nbins[i])
-        plot_on_one_graph(self.values, int, arr, 'Samples_divided.png', names)
+        # for i in range(len(arr)):
+        #     sample_plot(res_list_of_samples[i], int, arr[i], "Samples" + str(i) + "_div" + "_" + method + ".png",
+        #                 nbins[i])
+        # plot_on_one_graph(self.values, int, arr, 'Samples_divided.png', names)
 
     def method_of_estimation(self, list_of_samples, method='moments', type='normal'):
         """

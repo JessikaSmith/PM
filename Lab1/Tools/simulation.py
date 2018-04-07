@@ -19,8 +19,8 @@ class Simulator:
         array_of_vals = []
         for i in range(len(self.samples)):
             num = 0
-            tmp_min = min(i)
-            tmp_max = max(i)
+            tmp_min = min(self.samples[i])
+            tmp_max = max(self.samples[i])
             while (num < len(self.samples[i])):
                 u = np.random.uniform(0, 1, 2)
                 x = math.cos(2 * np.pi * u[0]) * math.sqrt(-2 * math.log(u[1]))
@@ -53,8 +53,8 @@ class Simulator:
             max_prob = normal_distrib(self.means[i], self.stds[i], self.means[i])
             while (num < len(self.samples[i])):
                 x = np.random.uniform(low=tmp_min, high=tmp_max+1, size=1)[0]
-                y = np.random.uniform(low=min_prob, high=max_prob-0.006, size=1)[0]
-                if normal_distrib(self.means[i], self.stds[i], x) <= y:
+                y = np.random.uniform(low=min_prob, high=max_prob, size=1)[0]
+                if y <= normal_distrib(self.means[i], self.stds[i], x):
                     array_of_vals += [x]
                     num += 1
         plot_histogram(array_of_vals, 'geometrical_estimation' + str(iter) + '.png')

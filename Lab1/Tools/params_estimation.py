@@ -75,7 +75,8 @@ class Estimator:
             s = Simulator(res_list_of_samples, mean, sd)
             for i in range(10):
                 # s.method_of_inverse_function(i)
-                s.geometrical_method(i)
+                # s.geometrical_method(i)
+                s.sample_boxmiller(i)
 
     def method_of_estimation(self, list_of_samples, method='moments', type='normal'):
         """
@@ -136,6 +137,3 @@ class Estimator:
         for i in range(len(mean)):
             print("Sample", i, "mean:", mean[i], "sd:", standard_dev[i])
         return list_of_samples, mean, standard_dev
-
-    def params_validation(self):
-        return True

@@ -14,8 +14,7 @@ path_to_figure = 'Figures\\'
 
 def plot_histogram(sample, name):
     x = np.array(sample)
-    data = [go.Histogram(x=x, histnorm='probability',autobinx=False,
-                         xbins=dict(start=0, end=26, size=26 / 18))]
+    data = [go.Histogram(x=x, histnorm='probability', autobinx=False)]
     layout = dict(
         xaxis=dict(title="values")
     )

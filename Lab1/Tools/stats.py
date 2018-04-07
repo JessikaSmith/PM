@@ -38,7 +38,7 @@ class Distribution:
         self.biased_variance = None
         self.min = min(self.values)
         self.max = max(self.values)
-        #self.quartiles = []
+        # self.quartiles = []
         self.iqr = None
         self.count_stats()
 

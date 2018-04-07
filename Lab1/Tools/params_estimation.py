@@ -4,8 +4,9 @@ import copy
 import random
 from statistics import median
 from scipy.stats import norm, lognorm, triang
-
+from Lab1.Tools import Simulator
 import time
+
 
 def normal_distrib(m, s, x):
     return 1 / (math.sqrt(2 * math.pi) * s) * math.exp(-(x - m) ** 2 / (2 * s ** 2))
@@ -46,36 +47,35 @@ class Estimator:
             m = list_of_samples[-1]
             del list_of_samples[-1]
             list_of_samples[-1] += m
-        list_of_names = ["moments", "mle", "quintiles"]
+        list_of_names = ["moments"] #, "mle", "quintiles"]
         for method in list_of_names:
-            res_list_of_samples, mean, std = self.method_of_estimation(list_of_samples, method, "normal")
+            res_list_of_samples, mean, std = self.method_of_estimation(list_of_samples, method)
             self.show_result(res_list_of_samples, [i / 5 for i in range(130)], mean, std, method)
-            for i in range(len(list_of_samples)):
-                print(mean[i], std[i])
-                self.get_q_q_plot(list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + method + str(i))
+            for i in range(len(res_list_of_samples)):
+                self.get_q_q_plot(res_list_of_samples[i], [mean[i], std[i]], 'qq_plot_' + method + str(i))
 
     def show_result(self, res_list_of_samples, int, mean, sd, method, type='normal'):
         arr = []
         for i in range(len(mean)):
             tmp_arr = []
-            if type == 'normal':
-                for x in int:
-                    tmp_arr += [normal_distrib(mean[i], sd[i], x)]
-                arr += [tmp_arr]
-            else:
-                for x in int:
-                    tmp_arr += log_normal_distrib(mean[i], sd[i], x)
-                arr += [tmp_arr]
+            for x in int:
+                tmp_arr += [normal_distrib(mean[i], sd[i], x)]
+            arr += [tmp_arr]
         names = []
         for i in range(len(mean)):
             names += ['Gaussian' + str(i)]
         nbins = [17, 4, 17]
         if method == 'quintiles':
-            nbins = [10,10,10]
-        # for i in range(len(arr)):
-        #     sample_plot(res_list_of_samples[i], int, arr[i], "Samples" + str(i) + "_div" + "_" + method + ".png",
-        #                 nbins[i])
+            nbins = [10, 10, 10]
+        for i in range(3):
+            sample_plot(res_list_of_samples[i], int, arr[i], "Samples" + str(i) + "_div" + "_" + method + ".png",
+                        nbins[i])
         # plot_on_one_graph(self.values, int, arr, 'Samples_divided.png', names)
+        if method == 'moments':
+            s = Simulator(res_list_of_samples, mean, sd)
+            for i in range(10):
+                # s.method_of_inverse_function(i)
+                s.geometrical_method(i)
 
     def method_of_estimation(self, list_of_samples, method='moments', type='normal'):
         """
@@ -94,10 +94,9 @@ class Estimator:
                 if not list_of_samples[i]:
                     ind += [i]
             if ind != []:
-                print(ind,len(list_of_samples))
-                if len(ind)==1:
+                if len(ind) == 1:
                     del list_of_samples[ind[0]]
-                elif len(ind)==2:
+                elif len(ind) == 2:
                     del list_of_samples[ind[-1]]
                     del list_of_samples[ind[0]]
             for sample in list_of_samples:
@@ -108,10 +107,9 @@ class Estimator:
                 if method == "mle":
                     mean += [m.mean]
                     standard_dev += [m.biased_variance ** (1 / 2)]
-                    print(m.biased_variance)
                 if method == "quintiles":
                     standard_dev += [m.iqr / 1.34]
-                    mean += [m.count_quintile(0.75)-(0.67*(m.iqr / 1.34))]
+                    mean += [m.count_quintile(0.75) - (0.67 * (m.iqr / 1.34))]
             new_list_of_samples = []
             for y in range(len(list_of_samples)):
                 new_list_of_samples += [[]]

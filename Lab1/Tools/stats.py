@@ -84,7 +84,6 @@ class Distribution:
         self.count_median()
         self.count_variance()
         self.standard_deviation = math.sqrt(self.variance)
-        #self.count_quartile()
         self.count_biased_variance()
         self.count_iqr()
 

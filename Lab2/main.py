@@ -23,14 +23,14 @@ def main():
 
     red = DimRed(data)
 
-    print('Optimal number of components is ', red.select_num_comp(10))
+    # print('Optimal number of components is ', red.select_num_comp(40))
 
-    optimal = red.select_num_comp(10)
-    red.svd()
+    optimal = red.select_num_comp(40)
+    # red.svd()
     red.variance_explained()
-    #red.pca_svd(optimal)
+    # red.pca_svd(optimal)
     # red.spectral_emb(optimal)
-    # red.fa(optimal)
+    red.fa(optimal)
 
 
 if __name__ == '__main__':

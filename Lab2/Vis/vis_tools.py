@@ -41,13 +41,13 @@ def plot_n_selection(eigvalues, title, num=7):
     # image.save_as(fig, filename=path_to_figure + title + '.jpeg')
 
 
-def plot_explained_variance(var_exp, cum_var_exp):
+def plot_explained_variance(var_exp, cum_var_exp, num_comp):
     trace1 = go.Bar(
-        x=['PC %s' % i for i in range(1, 7)],
+        x=['PC %s' % i for i in range(1, num_comp)],
         y=var_exp,
         showlegend=False)
     trace2 = go.Scatter(
-        x=['PC %s' % i for i in range(1, 7)],
+        x=['PC %s' % i for i in range(1, num_comp)],
         y=cum_var_exp,
         name='cumulative explained variance')
     data = [trace1, trace2]

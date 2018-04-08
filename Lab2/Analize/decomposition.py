@@ -18,7 +18,7 @@ class DimRed:
         self.sample = StandardScaler().fit_transform(sample)
 
     def covariances_matrix(self):
-        return self.sample.T*self.sample/((len(self.sample[0]))-1)
+        return self.sample.T * self.sample / ((len(self.sample[0])) - 1)
 
     def svd(self):
         u, s, v = np.linalg.svd(self.sample.T)
@@ -61,8 +61,8 @@ class DimRed:
         print(calculate_loadings(pca))
         # principal components scores
         eigen_vectors = pd.DataFrame(pca.components_.T)
-        #print(eigen_vectors)
-        #draw_heatmap(eigen_vectors, "PCA eigenvectors (svd)")
+        # print(eigen_vectors)
+        draw_heatmap(eigen_vectors, "PCA eigenvectors (svd)")
 
         print(pca.components_)
         pca_res = pca.fit_transform(list(self.sample))
@@ -79,14 +79,24 @@ class DimRed:
     def fa(self, n):
         fa = FactorAnalysis(n_components=n)
         fa.fit(self.sample)
-        print('fa_components: ',fa.components_)
+        m = fa.components_
+        factors = pd.DataFrame(fa.components_.T)
+        draw_heatmap(factors, "Factor analysis")
+        m1 = m**2
+        m2 = np.sum(m1,axis=1)
+        nn = fa.noise_variance_
+        for i in range(n):
+            print("component "+str(i) + ": "+ str((100*m2[i])/(np.sum(m2)+np.sum(nn))))
+
+        print('fa_components: ', fa.components_)
         fa = FactorAnalyzer()
         fa.analyze(pd.DataFrame(data=self.sample),
                    n_factors=n,
-                   method='minres')
+                   method='maxres')
+        print(fa.get_factor_variance())
         draw_heatmap(fa.loadings, "Loadings")
 
-    def variance_explained(self, num_comp = 20):
+    def variance_explained(self, num_comp=20):
         # covariance matrix
         cov_mat = np.cov(self.sample.T)
         eig_vals, eig_vecs = np.linalg.eig(cov_mat)
@@ -99,5 +109,11 @@ class DimRed:
         # draw_heatmap(s.T, "PCA eigenvectors (svd)")
         tot = sum(eig_vals)
         var_exp = [(i / tot) * 100 for i in sorted(eig_vals, reverse=True)]
+        cum_var_exp = np.cumsum(var_exp)
+        print("Explained variance with eigendecomposition")
+        # plot_explained_variance(var_exp, cum_var_exp, num_comp)
+        print("Explained variance with svd")
+        tot = sum(s)
+        var_exp = [(i / tot) * 100 for i in sorted(s, reverse=True)]
         cum_var_exp = np.cumsum(var_exp)
         plot_explained_variance(var_exp, cum_var_exp, num_comp)

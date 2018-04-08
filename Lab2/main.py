@@ -27,7 +27,7 @@ def main():
 
     optimal = red.select_num_comp(40)
     # red.svd()
-    red.variance_explained()
+    # red.variance_explained(optimal)
     # red.pca_svd(optimal)
     # red.spectral_emb(optimal)
     red.fa(optimal)
